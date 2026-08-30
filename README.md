@@ -27,6 +27,15 @@ Supabase and AWS RDS Postgres may be intentionally out of step. No automated job
 
 All discovered targets begin in `planned`. Production deployment is disabled until a reviewed `supabase db pull` baseline, contract-source readiness, migration/RLS tests, branch protection, exact repository/working-directory verification, provider preview, and production read-back are recorded.
 
+## Shared fleet contract
+
+`shared-defs.lock.json` pins contract version `1.0.0` and immutable commit
+`33bd1bec3f1044cc973e3fdc18b6864762d2a097` from
+`ORESoftware/k8s-libs-and-shared-defs`. Validation compares normalized schema
+digests, so local schema identifiers may remain relative while their behavior
+cannot drift from the reviewed fleet contract. The Zed coordinate is
+`oresoftware/supabase-gitops-contract`.
+
 Run:
 
 ```sh
@@ -34,4 +43,3 @@ just validate
 ```
 
 See `docs/architecture.md`, `docs/schema-authority.md`, and `docs/github-integration.md`.
-

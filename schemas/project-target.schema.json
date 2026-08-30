@@ -84,13 +84,42 @@
     "gitIntegration": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["provider", "state", "automaticBranching", "supabaseChangesOnly", "deployToProduction", "verifiedAt"],
+      "required": ["provider", "state", "automaticBranching", "supabaseChangesOnly", "deployToProduction", "branchProtection", "providerReadback", "verifiedAt"],
       "properties": {
         "provider": { "const": "supabase-github-app" },
         "state": { "type": "string", "enum": ["planned", "connected", "paused"] },
         "automaticBranching": { "type": "boolean" },
         "supabaseChangesOnly": { "type": "boolean" },
         "deployToProduction": { "type": "boolean" },
+        "branchProtection": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["state", "requiredCheck", "verifiedAt"],
+          "properties": {
+            "state": { "type": "string", "enum": ["pending", "verified"] },
+            "requiredCheck": { "type": "string", "minLength": 1 },
+            "verifiedAt": {
+              "oneOf": [
+                { "type": "null" },
+                { "type": "string", "format": "date-time" }
+              ]
+            }
+          }
+        },
+        "providerReadback": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["state", "verifiedAt"],
+          "properties": {
+            "state": { "type": "string", "enum": ["pending", "verified"] },
+            "verifiedAt": {
+              "oneOf": [
+                { "type": "null" },
+                { "type": "string", "format": "date-time" }
+              ]
+            }
+          }
+        },
         "verifiedAt": {
           "oneOf": [
             { "type": "null" },
@@ -135,4 +164,3 @@
     }
   }
 }
-
