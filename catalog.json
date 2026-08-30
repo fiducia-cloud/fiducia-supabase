@@ -1,0 +1,25 @@
+{
+  "$schema": "./schemas/catalog.schema.json",
+  "version": 1,
+  "github": {
+    "organization": "fiducia-cloud",
+    "repository": "fiducia-cloud/fiducia-supabase",
+    "defaultBranch": "main"
+  },
+  "supabaseOrganization": {
+    "id": "mkwkyvjiprtmdepshkys",
+    "name": "fiducia-cloud"
+  },
+  "canonicalProjectRef": "tsghmyixghclfmmvptln",
+  "projects": [
+    {
+      "ref": "tsghmyixghclfmmvptln",
+      "target": "projects/tsghmyixghclfmmvptln/target.json"
+    },
+    {
+      "ref": "ruxctrzdvugxztbjcpoi",
+      "target": "projects/ruxctrzdvugxztbjcpoi/target.json"
+    }
+  ]
+}
+

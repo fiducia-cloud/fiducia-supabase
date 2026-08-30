@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "./catalog.schema.json",
+  "title": "Organization Supabase provider-overlay catalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "github",
+    "supabaseOrganization",
+    "canonicalProjectRef",
+    "projects"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "const": 1 },
+    "github": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["organization", "repository", "defaultBranch"],
+      "properties": {
+        "organization": { "type": "string", "pattern": "^[A-Za-z0-9_.-]+$" },
+        "repository": { "type": "string", "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$" },
+        "defaultBranch": { "type": "string", "minLength": 1 }
+      }
+    },
+    "supabaseOrganization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z]{20}$" },
+        "name": { "type": "string", "minLength": 1 }
+      }
+    },
+    "canonicalProjectRef": {
+      "oneOf": [
+        { "type": "null" },
+        { "type": "string", "pattern": "^[a-z]{20}$" }
+      ]
+    },
+    "projects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["ref", "target"],
+        "properties": {
+          "ref": { "type": "string", "pattern": "^[a-z]{20}$" },
+          "target": { "type": "string", "pattern": "^projects/[a-z]{20}/target\\.json$" }
+        }
+      }
+    }
+  }
+}
+

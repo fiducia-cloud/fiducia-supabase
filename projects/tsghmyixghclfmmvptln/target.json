@@ -1,0 +1,63 @@
+{
+  "$schema": "../../schemas/project-target.schema.json",
+  "version": 1,
+  "githubOrganization": "fiducia-cloud",
+  "supabaseOrganization": {
+    "id": "mkwkyvjiprtmdepshkys",
+    "name": "fiducia-cloud"
+  },
+  "project": {
+    "ref": "tsghmyixghclfmmvptln",
+    "slug": "fiducia-cloud-main",
+    "status": "active",
+    "region": "us-east-1",
+    "environment": "production",
+    "canonical": true
+  },
+  "contractSource": {
+    "repository": "fiducia-cloud/fiducia-lib",
+    "branch": "main",
+    "authorityTier": "lib-fallback",
+    "state": "partial",
+    "rootDirectory": ".",
+    "sqlDesiredState": null,
+    "jsonSchemaDirectory": null
+  },
+  "providerOverlay": {
+    "repository": "fiducia-cloud/fiducia-supabase",
+    "branch": "main",
+    "workingDirectory": "projects/tsghmyixghclfmmvptln",
+    "supabaseDirectory": "projects/tsghmyixghclfmmvptln/supabase",
+    "migrationsDirectory": "projects/tsghmyixghclfmmvptln/supabase/migrations",
+    "functionsDirectory": "projects/tsghmyixghclfmmvptln/supabase/functions",
+    "configPath": "projects/tsghmyixghclfmmvptln/supabase/config.toml"
+  },
+  "gitIntegration": {
+    "provider": "supabase-github-app",
+    "state": "planned",
+    "automaticBranching": true,
+    "supabaseChangesOnly": true,
+    "deployToProduction": false,
+    "verifiedAt": null
+  },
+  "baseline": {
+    "state": "pending",
+    "method": "supabase-db-pull",
+    "migrationHead": null,
+    "sourceCommit": null,
+    "verifiedAt": null
+  },
+  "databaseAlignment": {
+    "relationship": "controlled-drift",
+    "peer": "aws-rds-postgres",
+    "convergence": "explicit-only",
+    "migrationEngine": "declarative-migrations/declarative-postgres-migrate.rs",
+    "registry": "ORESoftware/k8s-libs-and-shared-defs"
+  },
+  "dependencies": {
+    "apiContracts": "ORESoftware/api-docs",
+    "authenticationOrganization": "shared-auth",
+    "syncOrganization": "opto-sync"
+  }
+}
+
