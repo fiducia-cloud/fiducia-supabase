@@ -161,6 +161,29 @@
         "authenticationOrganization": { "const": "shared-auth" },
         "syncOrganization": { "const": "opto-sync" }
       }
+    },
+    "orchestration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "toolPath", "authority", "cliContract", "configParser", "secretLifecycle", "migrationEngine", "mutationMode", "reconciliationTargets", "verification"],
+      "properties": {
+        "repository": { "$ref": "#/$defs/repository" },
+        "toolPath": { "$ref": "#/$defs/relativePath" },
+        "authority": { "const": "non-authoritative" },
+        "cliContract": { "const": ".cli-flags.toml" },
+        "configParser": { "const": "flags-2-env/flags-2-env" },
+        "secretLifecycle": { "const": "oresoftware/ores-sops" },
+        "migrationEngine": { "const": "declarative-migrations/declarative-postgres-migrate.rs" },
+        "mutationMode": { "const": "plan-and-pr" },
+        "reconciliationTargets": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": { "type": "string", "enum": ["supabase", "aws-rds-postgres"] }
+        },
+        "verification": { "const": "independent-per-target" }
+      }
     }
   }
 }

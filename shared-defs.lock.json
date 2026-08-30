@@ -4,7 +4,7 @@
   "coordinate": "oresoftware/supabase-gitops-contract",
   "source": {
     "repository": "https://github.com/ORESoftware/k8s-libs-and-shared-defs.git",
-    "revision": "33bd1bec3f1044cc973e3fdc18b6864762d2a097",
+    "revision": "577fb7fb67444266e2f13b0945811c320c82f26c",
     "path": "supabase-defs",
     "contractVersion": "1.0.0"
   },
@@ -19,7 +19,7 @@
       "sourcePath": "supabase-defs/schemas/project-target.schema.json",
       "localPath": "schemas/project-target.schema.json",
       "digestMode": "normalized-json-without-id",
-      "sha256": "45334b2afde0c358c32b557746983b693c3138c4b73dd74341d5ca30686db6a3"
+      "sha256": "37b961ad235e99d7fe4b2fc254ce64365e708b498c5c98869f46f6b3007d5678"
     },
     {
       "sourcePath": "supabase-defs/schemas/contract-lock.schema.json",

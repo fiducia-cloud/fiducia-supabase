@@ -30,7 +30,7 @@ All discovered targets begin in `planned`. Production deployment is disabled unt
 ## Shared fleet contract
 
 `shared-defs.lock.json` pins contract version `1.0.0` and immutable commit
-`33bd1bec3f1044cc973e3fdc18b6864762d2a097` from
+`577fb7fb67444266e2f13b0945811c320c82f26c` from
 `ORESoftware/k8s-libs-and-shared-defs`. Validation compares normalized schema
 digests, so local schema identifiers may remain relative while their behavior
 cannot drift from the reviewed fleet contract. The Zed coordinate is

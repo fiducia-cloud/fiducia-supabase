@@ -261,6 +261,19 @@ if (catalog) {
     }
     if (target.databaseAlignment?.relationship !== 'controlled-drift') fail(`${entry.target}: database relationship must be controlled-drift`);
     if (target.databaseAlignment?.convergence !== 'explicit-only') fail(`${entry.target}: convergence must be explicit-only`);
+    const orchestration = target.orchestration;
+    if (orchestration !== undefined) {
+      if (orchestration.repository?.split('/')[0] !== target.githubOrganization) {
+        fail(`${entry.target}: orchestration repository owner must equal githubOrganization`);
+      }
+      if (!orchestration.repository?.endsWith('-infra')) {
+        fail(`${entry.target}: orchestration tools must live in an *-infra repository`);
+      }
+      if (!orchestration.reconciliationTargets?.includes('supabase')
+        || !orchestration.reconciliationTargets?.includes('aws-rds-postgres')) {
+        fail(`${entry.target}: orchestration must verify Supabase and RDS independently`);
+      }
+    }
   }
 
   if (catalog.canonicalProjectRef === null) {
