@@ -21,6 +21,7 @@ set search_path = pg_catalog, fiducia
 as $$
 declare
     stored fiducia.commercial_intake_submissions%rowtype;
+    inserted boolean := false;
 begin
     insert into fiducia.commercial_intake_submissions (
         kind,
@@ -50,7 +51,8 @@ begin
     on conflict (kind, idempotency_key) do nothing
     returning * into stored;
 
-    if not found then
+    inserted := found;
+    if not inserted then
         select * into strict stored
         from fiducia.commercial_intake_submissions
         where kind = p_kind and idempotency_key = p_idempotency_key;
@@ -65,7 +67,7 @@ begin
         'submission_id', stored.id,
         'created_at', stored.created_at,
         'response_payload', stored.response_payload,
-        'idempotent_replay', stored.request_sha256 = p_request_sha256
+        'idempotent_replay', not inserted
     );
 end;
 $$;
