@@ -19,7 +19,14 @@ create table fiducia.commercial_intake_submissions (
     response_sha256 text not null check (response_sha256 ~ '^[0-9a-f]{64}$'),
     contact_email_sha256 text not null check (contact_email_sha256 ~ '^[0-9a-f]{64}$'),
     source_host text not null check (
-        source_host in ('user.fiducia.cloud', 'api.fiducia.cloud', 'fiducia-flutter')
+        source_host in (
+            'user.fiducia.cloud',
+            'api.fiducia.cloud',
+            'interest.fiducia.cloud',
+            'quote.fiducia.cloud',
+            'apply.fiducia.cloud',
+            'fiducia-flutter'
+        )
     ),
     contract_version text not null default 'commercial-intake-v1'
         check (contract_version = 'commercial-intake-v1'),
