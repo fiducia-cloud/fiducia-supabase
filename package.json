@@ -7,7 +7,8 @@
     "node": ">=22"
   },
   "scripts": {
-    "test": "npm run validate",
+    "test": "node --test tests/*.test.mjs && npm run validate",
+    "test:commercial-intake": "node --test tests/commercial-intake-migrations.test.mjs",
     "validate": "node scripts/validate.mjs"
   },
   "devDependencies": {
@@ -15,4 +16,3 @@
     "ajv-formats": "3.0.1"
   }
 }
-
