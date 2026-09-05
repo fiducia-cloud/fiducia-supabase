@@ -84,13 +84,42 @@
     "gitIntegration": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["provider", "state", "automaticBranching", "supabaseChangesOnly", "deployToProduction", "verifiedAt"],
+      "required": ["provider", "state", "automaticBranching", "supabaseChangesOnly", "deployToProduction", "branchProtection", "providerReadback", "verifiedAt"],
       "properties": {
         "provider": { "const": "supabase-github-app" },
         "state": { "type": "string", "enum": ["planned", "connected", "paused"] },
         "automaticBranching": { "type": "boolean" },
         "supabaseChangesOnly": { "type": "boolean" },
         "deployToProduction": { "type": "boolean" },
+        "branchProtection": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["state", "requiredCheck", "verifiedAt"],
+          "properties": {
+            "state": { "type": "string", "enum": ["pending", "verified"] },
+            "requiredCheck": { "type": "string", "minLength": 1 },
+            "verifiedAt": {
+              "oneOf": [
+                { "type": "null" },
+                { "type": "string", "format": "date-time" }
+              ]
+            }
+          }
+        },
+        "providerReadback": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["state", "verifiedAt"],
+          "properties": {
+            "state": { "type": "string", "enum": ["pending", "verified"] },
+            "verifiedAt": {
+              "oneOf": [
+                { "type": "null" },
+                { "type": "string", "format": "date-time" }
+              ]
+            }
+          }
+        },
         "verifiedAt": {
           "oneOf": [
             { "type": "null" },
@@ -132,7 +161,29 @@
         "authenticationOrganization": { "const": "shared-auth" },
         "syncOrganization": { "const": "opto-sync" }
       }
+    },
+    "orchestration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "toolPath", "authority", "cliContract", "configParser", "secretLifecycle", "migrationEngine", "mutationMode", "reconciliationTargets", "verification"],
+      "properties": {
+        "repository": { "$ref": "#/$defs/repository" },
+        "toolPath": { "$ref": "#/$defs/relativePath" },
+        "authority": { "const": "non-authoritative" },
+        "cliContract": { "const": ".cli-flags.toml" },
+        "configParser": { "const": "flags-2-env/flags-2-env" },
+        "secretLifecycle": { "const": "oresoftware/ores-sops" },
+        "migrationEngine": { "const": "declarative-migrations/declarative-postgres-migrate.rs" },
+        "mutationMode": { "const": "plan-and-pr" },
+        "reconciliationTargets": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": { "type": "string", "enum": ["supabase", "aws-rds-postgres"] }
+        },
+        "verification": { "const": "independent-per-target" }
+      }
     }
   }
 }
-

@@ -1,0 +1,31 @@
+{
+  "$schema": "./schemas/contract-lock.schema.json",
+  "version": 1,
+  "coordinate": "oresoftware/supabase-gitops-contract",
+  "source": {
+    "repository": "https://github.com/ORESoftware/k8s-libs-and-shared-defs.git",
+    "revision": "577fb7fb67444266e2f13b0945811c320c82f26c",
+    "path": "supabase-defs",
+    "contractVersion": "1.0.0"
+  },
+  "artifacts": [
+    {
+      "sourcePath": "supabase-defs/schemas/organization-catalog.schema.json",
+      "localPath": "schemas/catalog.schema.json",
+      "digestMode": "normalized-json-without-id",
+      "sha256": "8ebaf0716e801898ee98c3c7d08c54e72093717ca370e71d2622b0637a501ee2"
+    },
+    {
+      "sourcePath": "supabase-defs/schemas/project-target.schema.json",
+      "localPath": "schemas/project-target.schema.json",
+      "digestMode": "normalized-json-without-id",
+      "sha256": "37b961ad235e99d7fe4b2fc254ce64365e708b498c5c98869f46f6b3007d5678"
+    },
+    {
+      "sourcePath": "supabase-defs/schemas/contract-lock.schema.json",
+      "localPath": "schemas/contract-lock.schema.json",
+      "digestMode": "normalized-json-without-id",
+      "sha256": "d4b4ec1179943cf97e8af105097c6e167670b97f6580366776159d9e3f69a369"
+    }
+  ]
+}

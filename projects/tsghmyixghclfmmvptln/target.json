@@ -38,6 +38,15 @@
     "automaticBranching": true,
     "supabaseChangesOnly": true,
     "deployToProduction": false,
+    "branchProtection": {
+      "state": "pending",
+      "requiredCheck": "validate",
+      "verifiedAt": null
+    },
+    "providerReadback": {
+      "state": "pending",
+      "verifiedAt": null
+    },
     "verifiedAt": null
   },
   "baseline": {
@@ -60,4 +69,3 @@
     "syncOrganization": "opto-sync"
   }
 }
-

@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { access, readFile, readdir } from 'node:fs/promises';
 import { dirname, join, normalize, relative, resolve, sep } from 'node:path';
 import process from 'node:process';
@@ -57,15 +58,76 @@ function requireFields(value, fields, label) {
   }
 }
 
+function normalizeContractJson(value) {
+  if (Array.isArray(value)) return value.map(normalizeContractJson);
+  if (value !== null && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.keys(value)
+        .filter((key) => key !== '$id')
+        .sort()
+        .map((key) => [key, normalizeContractJson(value[key])]),
+    );
+  }
+  return value;
+}
+
+function contractDigest(content, mode) {
+  if (mode === 'raw') return createHash('sha256').update(content).digest('hex');
+  if (mode === 'normalized-json-without-id') {
+    const value = JSON.parse(content);
+    return createHash('sha256').update(JSON.stringify(normalizeContractJson(value))).digest('hex');
+  }
+  fail(`shared-defs.lock.json: unsupported digest mode ${mode}`);
+  return null;
+}
+
 const catalogPath = join(root, 'catalog.json');
 const catalogSchema = await readJson(join(root, 'schemas/catalog.schema.json'));
 const targetSchema = await readJson(join(root, 'schemas/project-target.schema.json'));
+const contractLockSchema = await readJson(join(root, 'schemas/contract-lock.schema.json'));
 const catalogSchemaValidator = new Ajv2020({ allErrors: true, strict: true });
 const targetSchemaValidator = new Ajv2020({ allErrors: true, strict: true });
+const contractLockSchemaValidator = new Ajv2020({ allErrors: true, strict: true });
 addFormats(catalogSchemaValidator);
 addFormats(targetSchemaValidator);
+addFormats(contractLockSchemaValidator);
 const validateCatalogSchema = catalogSchemaValidator.compile(catalogSchema);
 const validateTargetSchema = targetSchemaValidator.compile(targetSchema);
+const validateContractLockSchema = contractLockSchemaValidator.compile(contractLockSchema);
+const contractLock = await readJson(join(root, 'shared-defs.lock.json')).catch((error) => {
+  fail(`shared-defs.lock.json: ${error.message}`);
+  return null;
+});
+
+if (contractLock) {
+  if (!validateContractLockSchema(contractLock)) {
+    for (const error of validateContractLockSchema.errors ?? []) {
+      fail(`shared-defs.lock.json${error.instancePath}: ${error.message}`);
+    }
+  }
+  assertNoForbiddenKeys(contractLock, 'shared-defs.lock.json');
+  const requiredArtifacts = new Set([
+    'supabase-defs/schemas/organization-catalog.schema.json',
+    'supabase-defs/schemas/project-target.schema.json',
+    'supabase-defs/schemas/contract-lock.schema.json',
+  ]);
+  const observedArtifacts = new Set(contractLock.artifacts?.map((artifact) => artifact.sourcePath) ?? []);
+  for (const sourcePath of requiredArtifacts) {
+    if (!observedArtifacts.has(sourcePath)) fail(`shared-defs.lock.json: missing ${sourcePath}`);
+  }
+  for (const artifact of contractLock.artifacts ?? []) {
+    const localPath = assertContained(artifact.localPath, `shared-defs.lock.json.${artifact.sourcePath}`);
+    if (!localPath || !(await exists(localPath))) {
+      fail(`shared-defs.lock.json: missing local artifact ${artifact.localPath}`);
+      continue;
+    }
+    const content = await readFile(localPath);
+    const digest = contractDigest(content, artifact.digestMode);
+    if (digest !== artifact.sha256) {
+      fail(`shared-defs.lock.json: ${artifact.localPath} differs from pinned ${artifact.sourcePath}`);
+    }
+  }
+}
 const catalog = await readJson(catalogPath).catch((error) => {
   fail(`catalog.json: ${error.message}`);
   return null;
@@ -171,8 +233,16 @@ if (catalog) {
     const integration = target.gitIntegration ?? {};
     const baseline = target.baseline ?? {};
     const contract = target.contractSource ?? {};
+    if (integration.branchProtection?.state === 'verified' && integration.branchProtection.verifiedAt === null) {
+      fail(`${entry.target}: verified branch protection requires verifiedAt`);
+    }
+    if (integration.providerReadback?.state === 'verified' && integration.providerReadback.verifiedAt === null) {
+      fail(`${entry.target}: verified provider read-back requires verifiedAt`);
+    }
     if (integration.state === 'connected') {
       if (integration.verifiedAt === null) fail(`${entry.target}: connected integration requires verifiedAt`);
+      if (integration.branchProtection?.state !== 'verified') fail(`${entry.target}: connected integration requires verified branch protection`);
+      if (integration.providerReadback?.state !== 'verified') fail(`${entry.target}: connected integration requires verified provider read-back`);
       if (baseline.state !== 'verified') fail(`${entry.target}: connected integration requires a verified baseline`);
       if (contract.state !== 'ready') fail(`${entry.target}: connected integration requires a ready contract source`);
       if (migrations.length === 0) fail(`${entry.target}: connected integration requires at least one migration`);
@@ -191,6 +261,19 @@ if (catalog) {
     }
     if (target.databaseAlignment?.relationship !== 'controlled-drift') fail(`${entry.target}: database relationship must be controlled-drift`);
     if (target.databaseAlignment?.convergence !== 'explicit-only') fail(`${entry.target}: convergence must be explicit-only`);
+    const orchestration = target.orchestration;
+    if (orchestration !== undefined) {
+      if (orchestration.repository?.split('/')[0] !== target.githubOrganization) {
+        fail(`${entry.target}: orchestration repository owner must equal githubOrganization`);
+      }
+      if (!orchestration.repository?.endsWith('-infra')) {
+        fail(`${entry.target}: orchestration tools must live in an *-infra repository`);
+      }
+      if (!orchestration.reconciliationTargets?.includes('supabase')
+        || !orchestration.reconciliationTargets?.includes('aws-rds-postgres')) {
+        fail(`${entry.target}: orchestration must verify Supabase and RDS independently`);
+      }
+    }
   }
 
   if (catalog.canonicalProjectRef === null) {
