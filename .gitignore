@@ -10,3 +10,7 @@ env/dec/
 *.key
 projects/*/supabase/.branches/
 projects/*/supabase/.temp/
+
+# Local temporary directories and Git worktrees (DEN-3956).
+tmp/
+temp/
