@@ -12,11 +12,12 @@ projects/*/supabase/.branches/
 projects/*/supabase/.temp/
 
 # Repository-local temporary data and authorized Git worktrees
-tmp
-temp
 tmp/worktrees
 temp/worktrees
 # Local temporary directories and Git worktrees (DEN-3956).
 tmp/
 temp/
 # Sanctioned scratch locations - AGENTS.md requires both, trailing-slash form
+
+# machine-local symlink to ORESoftware/my-ai AGENTS.md; never committed
+.ores/
