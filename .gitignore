@@ -19,3 +19,4 @@ temp/worktrees
 # Local temporary directories and Git worktrees (DEN-3956).
 tmp/
 temp/
+# Sanctioned scratch locations - AGENTS.md requires both, trailing-slash form
